@@ -61,8 +61,8 @@ function LLT(t) {
                                 + (Math.floor(d * a) & 255 - 128)
                                //   0xa444c444 is  1010 1000 1000 1000 1100 1000 1000 1000
                                //     bit reverse  0001 0001 0001 0011 0001 0001 0001 0101
-                                * ((0xa444c444 >> (t /drumSpeed & 31)) & 1) * a * 1.5 + (Math.floor((a
-                                                        * a * d * (t /(drumSpeed/4) & 1))) & 0xff - 0x80) * 0.1337)
+                                * ((0xa444c444 >> (t /drumSpeed & 31)) & 1) * a * 1.5
+                                + (Math.floor((a * d * (t /(drumSpeed/4) & 1))) & 0xff - 0x80) * 0.1337)
                         ;//* sb;
 
                 // 8000/2pi= 1300 hz ..... 2600hz  650 hz  (1300,2600,652,1301) hz saw wave vol 31*4  g is evelope
@@ -79,11 +79,64 @@ function LLT(t) {
         out=Math.max(Math.min((wave + drum + instrument) / 3, 127), -128);
         //out=Math.max(Math.min((drum) / 3, 127), -128);
         //out =d/2048*128;
+        out = drum/3;
     return out;
 }
 
 
-export function dsp(t) {
+function dsp1(t) {
   return LLT((t)*8000)/128;
 } 
+export function dsp(t)
+{
+  //return dsp1(t);
 
+  return dsp2(t);
+  
+}
+
+//change source from http://pastebin.com/TpDuf7T4
+
+// YAY!
+function dsp2(t){
+  var n = sampleRate / 220;
+ 
+  var bass_osc =
+    0.324 * tri(n, t)
+  + 0.052 * sin(n * 22, t)
+  ;
+ 
+  var bass_sub=0;
+  var sss=1.0;
+  //tu tu tu tu tu tu
+  //bass_sub =sub(bass_osc, (0.5+Math.pow(sin(1.4337, t),1/2)*0.5) * (50 + (1 + Math.pow(sin(0.12, t),1/2)) * 35), t);
+  //ti wa ya wa pi ya wa
+  //bass_sub =sub(bass_osc, (Math.pow(sin(1.1337, t)*0.5+0.3,1/1.2)*80.5+62) *(sin(1,t)+1)+ (2230 + ( Math.pow(sin(0.22, t)*0.5+0.5,1/12)) * 2270), t);
+  
+  //muet muet muet put muet put
+  bass_sub=sub(bass_osc, (Math.pow(sin(1.4337, t)*0.5+0.5,144/2)*0.5) * (15 + (Math.pow(sin(0.12, t)*0.5+0.5,1/2)) * 15), t);
+  //good sound
+  //sss=(sin(1.2,t)*0.002+0.05);
+  //bass_sub=sub(bass_osc, (Math.pow(sin(1.14337*sss, t)*0.3+0.7,25/2)*1.7-0.004) * (1 + (Math.pow(sin(0.12, t)*0.5+0.5,2/12)) * 1.5), t);
+  //wue wue wue ya ya ya 
+  //sss=Math.pow((sin(0.634,t)*0.002+0.8),33);
+  //bass_sub=sub(bass_osc, (Math.pow(sin(1.44337*sss, t)*0.3+0.7,133/2)*13.7-11.304) * (1 + (Math.pow(sin(0.22, t)*0.9+0.1,22/1)) * 11.5), t);
+  
+  return 0.5 * bass_sub;
+ 
+}
+ 
+ 
+var tau = 2 * Math.PI;
+var abs=Math.abs; 
+function sub(wave, mul, t){
+  return Math.sin(wave *mul + tau * t);
+}
+ 
+function sin(x, t){
+  return Math.sin(tau * t * x);
+}
+ 
+function tri(x, t){
+  return Math.abs(1 - (2 * t * x) % 2) * 2 - 1;
+}
