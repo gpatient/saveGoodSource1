@@ -32,8 +32,8 @@ function LLT(t) {
                  //=t/2 %4 2 second for background one array.........  (8192/8000 bpm )
                 y = Math.pow(2, backgroundWaveNotes[t >> 14 & 3] / 12);
 
-                //0x800 = 256*8= 2^11 .......
-                var drumSpeed=0x12ff;
+                //0x800 = 256*8= 2^11 .......   7ff = 3.99 hz beat (8000/2048)
+                var drumSpeed=0x7ff;
                 //for drum
                 // a= 1/4 beat saw evelope
                 //a = 1 - ((t & 0x7ff) /  0x7ff);
